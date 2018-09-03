@@ -1,10 +1,8 @@
 import anime from 'animejs'
 import WebMidi from 'webmidi'
 import * as THREE from 'three';
-
-// three-full has modular versions of the three examples folder
-// Importing the file directly keeps webpack from bundling the entire three-full library
-import { OrbitControls } from 'three-full/sources/controls/OrbitControls'
+// this line requires @wildpeaks/three-webpack-plugin
+import { OrbitControls } from 'three/examples/js/controls/OrbitControls'
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);

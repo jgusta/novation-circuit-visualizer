@@ -1,6 +1,7 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
+const ThreeWebpackPlugin = require('@wildpeaks/three-webpack-plugin');
 
 module.exports = {
     mode: 'development',
@@ -12,7 +13,8 @@ module.exports = {
         // new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({
             title: 'Circuit Visualizer'
-        })
+        }),
+        new ThreeWebpackPlugin()
     ],
     output: {
         filename: 'bundle.js',
