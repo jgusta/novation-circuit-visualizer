@@ -1,13 +1,10 @@
 import anime from 'animejs'
 import WebMidi from 'webmidi'
-
-// This part is hacky but after much noodling around I found it is the best way to
-// get the example packages imported without importing ALL from three-full.
-// Just import the file directly (not as submodule) then attach it manually to the THREE object.
-// Importing the file directly keeps webpack from bundling the entire three-full library
 import * as THREE from 'three';
+
+// three-full has modular versions of the three examples folder
+// Importing the file directly keeps webpack from bundling the entire three-full library
 import { OrbitControls } from 'three-full/sources/controls/OrbitControls'
-THREE.OrbitControls = OrbitControls;
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -25,7 +22,7 @@ window.addEventListener('resize', function () {
     camera.updateProjectionMatrix();
 });
 
-var controls = new THREE.OrbitControls(camera, renderer.domElement);
+var controls = new OrbitControls(camera, renderer.domElement);
 camera.position.z = 10;
 
 
