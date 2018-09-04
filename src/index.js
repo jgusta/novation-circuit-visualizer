@@ -13,41 +13,41 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 window.addEventListener('resize', function () {
-    var width = window.innerWidth;
-    var height = window.innerHeight;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
     renderer.setSize(width, height);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
 });
 
-var controls = new OrbitControls(camera, renderer.domElement);
+new OrbitControls(camera, renderer.domElement);
 camera.position.z = 10;
 
 
 var lightBoxMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, wireframe: true });
 var lightBoxGeometry = new THREE.SphereGeometry(1, 16, 16);
 
-var synth1 = new THREE.Mesh(lightBoxGeometry, new THREE.MeshBasicMaterial({ color: 0xF85BFD, wireframe: true }));
+const synth1 = new THREE.Mesh(lightBoxGeometry, new THREE.MeshBasicMaterial({ color: 0xF85BFD, wireframe: true }));
 synth1.position.set(-5, 0, 0);
 scene.add(synth1);
 
-var synth2 = new THREE.Mesh(lightBoxGeometry, new THREE.MeshBasicMaterial({ color: 0x60FA8A, wireframe: true }));
+const synth2 = new THREE.Mesh(lightBoxGeometry, new THREE.MeshBasicMaterial({ color: 0x60FA8A, wireframe: true }));
 synth2.position.set(-3, 0, 0);
 scene.add(synth2);
 
-var drum1 = new THREE.Mesh(lightBoxGeometry, new THREE.MeshBasicMaterial({ color: 0xFF9B43, wireframe: true }));
+const drum1 = new THREE.Mesh(lightBoxGeometry, new THREE.MeshBasicMaterial({ color: 0xFF9B43, wireframe: true }));
 drum1.position.set(-1, 0, 0);
 scene.add(drum1);
 
-var drum2 = new THREE.Mesh(lightBoxGeometry, new THREE.MeshBasicMaterial({ color: 0xFF9B43, wireframe: true }));
+const drum2 = new THREE.Mesh(lightBoxGeometry, new THREE.MeshBasicMaterial({ color: 0xFF9B43, wireframe: true }));
 drum2.position.set(1, 0, 0);
 scene.add(drum2);
 
-var drum3 = new THREE.Mesh(lightBoxGeometry, new THREE.MeshBasicMaterial({ color: 0xE8FF24, wireframe: true }));
+const drum3 = new THREE.Mesh(lightBoxGeometry, new THREE.MeshBasicMaterial({ color: 0xE8FF24, wireframe: true }));
 drum3.position.set(3, 0, 0);
 scene.add(drum3);
 
-var drum4 = new THREE.Mesh(lightBoxGeometry, new THREE.MeshBasicMaterial({ color: 0xE8FF24, wireframe: true }));
+const drum4 = new THREE.Mesh(lightBoxGeometry, new THREE.MeshBasicMaterial({ color: 0xE8FF24, wireframe: true }));
 drum4.position.set(5, 0, 0);
 scene.add(drum4);
 
@@ -80,37 +80,45 @@ WebMidi.enable(function (err) {
     console.log(WebMidi.inputs);
     console.log(WebMidi.outputs);
 
-    var input = WebMidi.getInputByName("Circuit");
+    const input = WebMidi.getInputByName("Circuit");
 
     input.addListener('noteon', 1, function (e) {
-        synthOneOn(e.note.number);
+        console.log("Synth 1 on " + e.note.number);
+        synthOn(synth1, e.note.number)
     });
 
     input.addListener('noteon', 2, function (e) {
-        synthTwoOn(e.note.number);
+        console.log("Synth 2 on " + e.note.number);
+        synthOn(synth2, e.note.number)
     });
 
     input.addListener('noteoff', 1, function (e) {
-        synthOneOff(e.note.number);
+        console.log("Synth 1 off " + e.note.number);
+        synthOff(synth1, e.note.number)
     });
 
     input.addListener('noteoff', 2, function (e) {
-        synthTwoOff(e.note.number);
+        console.log("Synth 2 off " + e.note.number);
+        synthOff(synth2, e.note.number)
     });
 
     input.addListener('noteon', 10, function (e) {
         switch (e.note.number) {
             case 60:
-                drumOneOn();
+                drumOn(drum1);
+                console.log('Drum 1 on');
                 break;
             case 62:
-                drumTwoOn();
+                drumOn(drum2);
+                console.log('Drum 2 on');
                 break;
             case 64:
-                drumThreeOn();
+                drumOn(drum3);
+                console.log('Drum 3 on');
                 break;
             case 65:
-                drumFourOn();
+                drumOn(drum4);
+                console.log('Drum 4 on');
                 break;
             default:
                 break;
@@ -121,16 +129,20 @@ WebMidi.enable(function (err) {
     input.addListener('noteoff', 10, function (e) {
         switch (e.note.number) {
             case 60:
-                drumOneOff();
+                drumOff(drum1);
+                console.log('Drum 1 off');
                 break;
             case 62:
-                drumTwoOff();
+                drumOff(drum2);
+                console.log('Drum 2 off');
                 break;
             case 64:
-                drumThreeOff();
+                drumOff(drum3);
+                console.log('Drum 3 off');
                 break;
             case 65:
-                drumFourOff();
+                drumOff(drum4);
+                console.log('Drum 4 off');
                 break;
             default:
                 break;
@@ -138,62 +150,45 @@ WebMidi.enable(function (err) {
     });
 });
 
-function synthOneOn(number) {
-    console.log('Synth 1 on ' + number);
-    synth1.position.y = number * yScale;
+function synthOn(myTarget, number) {
+    (function (myTarget) {
+        anime.remove(myTarget.position);
+        anime({
+            targets: myTarget.position,
+            y: number * yScale
+        })
+    })(myTarget)
 }
 
-function synthTwoOn(number) {
-    console.log('Synth 2 on ' + number);
-    synth2.position.y = number * yScale;
+function synthOff(myTarget, number) {
+    (function (myTarget) {
+        anime.remove(myTarget.position);
+        anime({
+            targets: myTarget.position,
+            y: 0
+        })
+    })(myTarget)
 }
 
-function synthOneOff(number) {
-    console.log('Synth 1 off ' + number);
-    synth1.position.y = 0;
+function drumOn(myTarget) {
+    (function (myTarget) {
+        myTarget.restartAnime = myTarget.restartAnime || anime({
+            targets: myTarget.position,
+            duration: 100,
+            loop: 2,
+            direction: 'alternate',
+            y: 100 * yScale
+        })
+        myTarget.restartAnime.restart();
+    })(myTarget)
 }
 
-function synthTwoOff(number) {
-    console.log('Synth 2 off ' + number);
-    synth2.position.y = 0;
-}
-
-function drumOneOn() {
-    console.log('Drum 1 on');
-    drum1.position.y = 100 * yScale;
-}
-
-function drumTwoOn() {
-    console.log('Drum 2 on');
-    drum2.position.y = 100 * yScale;
-}
-
-function drumThreeOn() {
-    console.log('Drum 3 on');
-    drum3.position.y = 100 * yScale;
-}
-
-function drumFourOn() {
-    console.log('Drum 4 on');
-    drum4.position.y = 100 * yScale;
-}
-
-function drumOneOff() {
-    console.log('Drum 1 off');
-    drum1.position.y = 0;
-}
-
-function drumTwoOff() {
-    console.log('Drum 2 off');
-    drum2.position.y = 0;
-}
-
-function drumThreeOff() {
-    console.log('Drum 3 off');
-    drum3.position.y = 0;
-}
-
-function drumFourOff() {
-    console.log('Drum 4 off');
-    drum4.position.y = 0;
+function drumOff(myTarget) {
+    // (function (myTarget) {
+    //     anime.remove(myTarget.position);
+    //     anime({
+    //         targets: myTarget.position,
+    //         y: 0
+    //     })
+    // })(myTarget)
 }
